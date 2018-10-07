@@ -1,0 +1,337 @@
+Linux第二篇
+#
+1、Linux上的文件管理类命令都有哪些，其常用的使用方法及其相关示例演示。
+##
+（1）mkdir [OPTION]… DIRECTORY…（默认，基名可以不存在，基名的路径必须存在）
+-p，–parents：按需创建父目录路径；
+-v，–verbose：显示创建过程；
+-m，–mode=MODE：直接给定目标目录的权限
+例如[root@localhost ~]# mkdir -pv /tmp/x/y/z
+mkdir: 已创建目录 “/tmp/x/y”
+mkdir: 已创建目录 “/tmp/x/y/z”
+
+（2）rmdir：remove directory只能删除空目录
+rmdir [OPTION]… DIRECTORY…
+-v，–verbose：显示过程；
+-p，–parents：删除指定的空目录后，如果其父目录为空，则一并删除；
+例如[root@localhost ~]# rmdir -pv /tmp/x/y/z
+rmdir: 正在删除目录 “/tmp/x/y/z”
+rmdir: 正在删除目录 “/tmp/x/y”
+rmdir: 正在删除目录 “/tmp/x”
+rmdir: 删除目录 “/tmp/x” 失败: 目录非空
+
+（3）tree命令：显示目录树
+tree-list contents of directories in a tree-like format
+-L level：Max display depth of the directory tree指定显示几级路径；
+-P pattern：List only those files that match the wild-card pattern：基于glob通配机制，仅显示模式匹配的路径；
+-d：仅显示目录；
+-I patteren：取反机制，不显示模式匹配到的路径；
+-o filename：保存在文件中；
+[root@localhost ~]# tree -d /tmp/mylinux
+
+/tmp/mylinux
+
+├── bin
+
+├── boot
+
+│   └── grub  
+
+├── dev  
+
+├── etc  
+
+│   ├── rc.d   
+
+│   │   └── init.d
+
+│   └── sysconfig
+
+│   └── network-scripts
+
+├── lib
+
+│   └── modules
+
+├── lib64
+
+├── proc
+
+├── sbin
+
+├── sys
+
+├── tmp
+
+├── usr
+
+│   └── local
+
+│   ├── bin
+
+│   └── sbin
+
+└── var
+
+├── lock
+
+├── log
+
+└── run
+
+（4）more命令：翻到尾部直接退出命令，不能翻回；
+more [options] file […]
+more翻到尾部就结束了，未到尾部可来回翻页；
+
+例如：
+~]# more /var/log/secure
+
+（5）less命令：
+less file[…]
+q退出，可自由翻屏；
+
+（6）head命令：
+查看文件的前n行，默认为10行；
+head [options] file
+-n #：显示前#行；
+-#：有些发行版不支持；
+
+例如：
+~]# head /var/log/messages
+
+（7）tail命令：
+查看文件的后n行
+tail [options] file
+-n #：显示前#行；
+-#：有些版本不支持；
+-f：查看文件尾部内容结束后不退出，阻塞在文件上，追加新内容时会继续显示，Ctrl+c退出；
+
+终止：Ctrl+c
+例如：
+~]# tail /var/log/messages
+~]# tail -20 /var/log/messages：显示倒数20行；
+~]# tail -f /tmp/fstab：查看不退出，显示实时追加新的内容的变化；
+
+（8）stat命令：查看文件属性信息（元数据）或文件系统状态
+
+stat – display file or file system status
+
+显示内容包括：
+
+文件路径
+
+文件大小
+
+文件占用block
+
+每个IO block大小
+
+文件类型
+
+文件所在设备的主/次设备号
+
+文件的inode
+
+文件被硬链接次数
+
+文件权限
+
+文件的属主UID
+
+文件的属组GID
+
+环境（SELinux）
+
+access time：最近访问时间
+
+modify time：最近更改时间
+
+change time：最近改变时间
+
+例如：# ~]stat /tmp/fstab：查看文件的属性信息；
+
+2、bash的工作特性之命令执行状态返回值和命令行展开所涉及的内容及其示例演示。
+
+命令执行的状态结果：
+
+bash通过状态返回值来输出此结果：
+
+成功：0
+
+失败：1-255
+
+命令执行完成之后，其状态返回值保存于bash的特殊变量$?中；
+
+命令正常执行时，有的还回有命令返回值：
+根据命令及其功能不同，结果各不相同；
+
+引用命令的执行结果：
+
+$(COMMAND)
+
+或COMMAND
+
+bash的基础特性之：命令行展开
+
+~：自动展开为用户的家目录，或指定的用户的家目录；
+
+{}：可承载一个以逗号分隔的路径列表，并能够将其展开为多个路径；
+
+例如：/tmp/{a,b} 相当于 /tmp/a /tmp/b
+
+3、请使用命令行展开功能来完成以下练习：
+
+(1)、创建/tmp目录下的：a_c, a_d, b_c, b_d
+
+[root@localhost ~]# mkdir -pv {a,b}_{c,d}
+
+mkdir: 已创建目录 “a_c”
+
+mkdir: 已创建目录 “a_d”
+
+mkdir: 已创建目录 “b_c”
+
+mkdir: 已创建目录 “b_d”
+
+(2)、创建/tmp/mylinux目录下的：
+
+mylinux/
+
+├── bin
+
+├── boot
+
+│ └── grub
+
+├── dev
+
+├── etc
+
+│ ├── rc.d
+
+│ │ └── init.d
+
+│ └── sysconfig
+
+│ └── network-scripts
+
+├── lib
+
+│ └── modules
+
+├── lib64
+
+├── proc
+
+├── sbin
+
+├── sys
+
+├── tmp
+
+├── usr
+
+│ └── local
+
+│ ├── bin
+
+│ └── sbin
+
+└── var
+
+├── lock
+
+├── log
+
+└── run
+
+mkdir -pv /tmp/mylinux/{bin,boot/grub,dev,etc/{rc.d/init.d,sysconfig/network-scripts},lib/modules,lib64,proc,sbin,sys,tmp,usr/local/{bin,sbin},var,lock,log,run}
+
+4、文件的元数据信息有哪些，分别表示什么含义，如何查看？如何修改文件的时间戳信息。
+
+元数据（metadata）：存放于文件系统中的inode里
+
+显示内容包括：
+
+文件路径
+
+文件大小
+
+文件占用block
+
+每个IO block大小
+
+文件类型
+
+文件所在设备的主/次设备号
+
+文件的inode
+
+文件被硬链接次数
+
+文件权限
+
+文件的属主UID
+
+文件的属组GID
+
+环境（SELinux）
+
+access time：最近访问时间
+
+modify time：最近更改时间
+
+change time：最近改变时间
+
+stat [OPTION]… FILE…
+
+touch [OPTION]… FILE…
+
+-t STAMP：[[CC]YY]MMDDhhmm[.ss]
+
+年月日时分秒
+
+-a：仅修改atime；
+
+-m：仅修改mtime；
+
+5、如何定义一个命令的别名，如何在命令中引用另一个命令的执行结果？
+
+定义别名：
+~]# alias NAME=’COMMADN’
+
+管道：|
+COMMAND1|COMMAND2|COMMAND3|…
+
+命令1的输出当做命令2的输入…
+
+最后一个命令是在子shell
+
+6、显示/var目录下所有以l开头，以一个小写字母结尾，且中间至少出现一位数字（可以有其它字符）的文件或目录。
+
+ls -d /var/1*[0-9]*[[:lower:]]
+
+7、显示/etc目录下，以任意一个数字开头，且以非数字结尾的文件或目录。
+
+ls -d /tmp/[[:digit:]]*[^[:digit:]]
+
+8、显示/etc目录下，以非字母开头，后面跟了一个字母以及其它任意长度任意字符的文件或目录。
+
+ls -d /etc/[^[:alpha:]][[:alpha:]]*
+
+9、在/tmp目录下创建以tfile开头，后跟当前日期和时间的文件，文件名形如：
+
+tfile-2016-05-27-09-32-
+[root@localhost ~]# mkdir /tmp/tfile-$(date +%Y-%m-%d-%H-%M-%S)
+
+10、复制/etc目录下所有以p开头，以非数字结尾的文件或目录到/tmp/mytest1目录中。
+
+cp -r /etc/p*[^[:digit:]] /tmp/mytest1
+
+11、复制/etc目录下所有以.d结尾的文件或目录至/tmp/mytest2目录中。
+
+cp -r /etc/*.d /tmp/mytest2
+
+12、复制/etc/目录下所有以l或m或n开头，以.conf结尾的文件至/tmp/mytest3目录中。
+
+cp /etc/{l,m,n}*.conf /tmp/mytest3
