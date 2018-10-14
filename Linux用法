@@ -1,0 +1,174 @@
+1、列出当前系统上所有已经登录的用户的用户名，注意：同一个用户登录多次，则只显示一次即可。
+
+[root@centos7 ~]# who | cut -d ' ' -f1 | sort -u
+
+     root
+
+2、取出最后登录到当前系统的用户的相关信息。
+
+ [root@centos7 ~]# who |tail -1
+
+     root     pts/0        2018-10-14 12：46 (192.168.232.1)
+ 
+3、取出当前系统上被用户当作其默认shell的最多的那个shell。
+
+[root@centos7 ~]# cut -d: -f7 /etc/passwd | uniq -c |sort -n| tail -1
+
+    33 /sbin/nologin
+ 
+4、将/etc/passwd中的第三个字段数值最大的后10个用户的信息全部改为大写后保存至/tmp/maxusers.txt文件中
+
+[root@centos7 ~]# sort -t: -k3 /etc/passwd | tail -10 | tr 'a-z' 'A-Z' > /tmp/maxusers.txt
+
+[root@centos7 ~]# cat /tmp/maxusers.txt
+
+    GEOCLUE:X:991:987:USER FOR GEOCLUE:/VAR/LIB/GEOCLUE:/SBIN/NOLOGIN
+    GLUSTER:X:992:989:GLUSTERFS DAEMONS:/VAR/RUN/GLUSTER:/SBIN/NOLOGIN
+    UNBOUND:X:993:990:UNBOUND DNS RESOLVER:/ETC/UNBOUND:/SBIN/NOLOGIN
+    CHRONY:X:994:991::/VAR/LIB/CHRONY:/SBIN/NOLOGIN
+    SETROUBLESHOOT:X:995:992::/VAR/LIB/SETROUBLESHOOT:/SBIN/NOLOGIN
+    SASLAUTH:X:996:76:SASLAUTHD USER:/RUN/SASLAUTHD:/SBIN/NOLOGIN
+    COLORD:X:997:995:USER FOR COLORD:/VAR/LIB/COLORD:/SBIN/NOLOGIN
+    LIBSTORAGEMGMT:X:998:996:DAEMON ACCOUNT FORLIBSTORAGEMGMT:/VAR/RUN/LSM:/SBIN/NOLOGIN
+    POLKITD:X:999:998:USER FOR POLKITD:/:/SBIN/NOLOGIN
+    NOBODY:X:99:99:NOBODY:/:/SBIN/NOLOGIN
+ 
+5、取出当前主机的IP地址，提示：对ifconfig命令的结果进行切分
+
+[root@centos7 ~]# ifconfig ens33 | grep "inet" |head -1| cut -d' ' -f10
+
+    192.168.232.134
+
+6、列出/etc目录下所有以.conf结尾的文件的文件名，并将其名字转换为大写后保存至/tmp/etc.conf文件中。
+
+[root@centos7 ~]# ls /etc/*.conf | tr 'a-z' 'A-Z' > /tmp/etc.conf
+[root@centos7 ~]# cat /tmp/etc.conf
+
+    /ETC/ASOUND.CONF
+    /ETC/BRLTTY.CONF
+    /ETC/CHRONY.CONF
+    /ETC/DLEYNA-SERVER-SERVICE.CONF
+    /ETC/DNSMASQ.CONF
+    /ETC/DRACUT.CONF
+    /ETC/E2FSCK.CONF
+    /ETC/FPRINTD.CONF
+    /ETC/FUSE.CONF
+    /ETC/GEOIP.CONF
+    /ETC/HOST.CONF
+    /ETC/IDMAPD.CONF
+    /ETC/IPSEC.CONF
+    /ETC/KDUMP.CONF
+    /ETC/KRB5.CONF
+    /ETC/KSMTUNED.CONF
+    /ETC/LD.SO.CONF
+    /ETC/LIBAUDIT.CONF
+    /ETC/LIBUSER.CONF
+    /ETC/LOCALE.CONF
+    /ETC/LOGROTATE.CONF
+    /ETC/MAN_DB.CONF
+    /ETC/MKE2FS.CONF
+    /ETC/MTOOLS.CONF
+    /ETC/NFS.CONF
+    /ETC/NFSMOUNT.CONF
+    /ETC/NSSWITCH.CONF
+    /ETC/NUMAD.CONF
+    /ETC/ODDJOBD.CONF
+    /ETC/PBM2PPA.CONF
+    /ETC/PNM2PPA.CONF
+    /ETC/RADVD.CONF
+    /ETC/REQUEST-KEY.CONF
+    /ETC/RESOLV.CONF
+    /ETC/RSYNCD.CONF
+    /ETC/RSYSLOG.CONF
+    /ETC/SESTATUS.CONF
+    /ETC/SOS.CONF
+    /ETC/SUDO.CONF
+    /ETC/SUDO-LDAP.CONF
+    /ETC/SYSCTL.CONF
+    /ETC/TCSD.CONF
+    /ETC/UPDATEDB.CONF
+    /ETC/USB_MODESWITCH.CONF
+    /ETC/VCONSOLE.CONF
+    /ETC/WVDIAL.CONF
+    /ETC/YUM.CONF
+ 
+7、显示/var目录下一级子目录或文件的总个数。
+
+[root@centos7 ~]# ls -a /var | wc -l
+
+    24
+ 
+8、取出/etc/group文件中第三个字段数值最小的10个组的名字。
+
+[root@centos7 ~]# sort -t: -k3 /etc/group | head -10 | cut -d: -f1
+
+    f1
+    root
+    bin
+    wheel
+    users
+    liu
+    webs
+    mysql
+    qemu
+    cdrom
+    usbmuxd
+ 
+9、将/etc/fstab和/etc/issue文件的内容合并为同一个内容后保存至/tmp/etc.test文件中。
+
+[root@centos7 ~]# cat /etc/{fstab,issue} > /tmp/etc.txt
+
+[root@centos7 ~]# cat /tmp/etc.txt
+
+    #
+    #/etc/fstab
+    #Created by anaconda on Wed Sep 19 03:37:37 2018
+    #
+    #Accessible filesystems, by reference, are maintained under '/dev/disk'
+    #See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+    #
+    UUID=f176ce0e-f285-4cb0-a532-dfd401eeb38b /                       xfs     defaults        0 0
+    UUID=6ccefe32-c6cd-4c24-a83d-e30bf4245b3e /boot                   xfs     defaults        0 0
+    UUID=e5e066e8-ebf4-4278-b399-ea370da68fa4 /date                   xfs     defaults        0 0
+    UUID=3d6f3aa3-b513-4e4b-83e3-d3f43cbdfb06 swap                    swap    defaults        0 0
+    \S
+    Kernel \r on an \m
+
+    \S
+    Kernel \r on an \m
+ 
+10、请总结描述用户和组管理类命令的使用方法并完成以下练习：
+
+
+   (1)、创建组distro，其GID为2016；
+
+    [root@centos7 ~]# groupadd -g 2016 distro
+
+   (2)、创建用户mandriva, 其ID号为1005；基本组为distro；
+
+    [root@centos7 ~]# useradd -u 1005  -G distro mandriva 
+   
+(3)、创建用户magedu，其ID号为1100，家目录为   /home/linux;
+
+    [root@centos7 ~]# useradd  -u 1100 -d /home/linux mageia
+ 
+   (4)、给用户magedu添加密码，密码为123456；
+
+    [root@centos7 ~]# echo "123456" | passwd –stdin mageia
+
+   (5)、删除mandriva，但保留其家目录；
+
+    [root@centos7 ~]# userdel mandriva
+(6)、创建用户slackware，其ID号为2002，基本组为distro，附加组peguin；
+
+    [root@centos7 ~]# useradd -u 2002 -g distro -G peguin slackware
+ 
+ (7)、修改slackware的默认shell为/bin/tcsh；
+
+ 
+
+    usermod -s /bin/tcsh slackware
+
+   (8)、为用户slackware新增附加组admins；
+
+    usermod -G admins slackware
