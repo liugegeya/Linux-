@@ -1,0 +1,185 @@
+## &ensp;&ensp;文本查看及处理工具wc, cut, sort, uniq
+#
+### cut：截取文件的片段
+#### 使用语法：cut OPTION… [FILE]…
+OPTION选项:
+
+-d CHAR：以指定的字符为分隔符；不指定时以空白字符为分隔符
+
+-f (#|#-#|#，#)FIELDS：挑选出的字段；
+
+以：作为分隔符，截取第1,7字段。
+
+[root@localhost ~]# cut -d : -f 1,7 /tmp/passwd 此命令选项和参数之间可以省略空格
+
+    root:/bin/bash
+    bin:/sbin/nologin
+    daemon:/sbin/nologin
+    adm:/sbin/nologin
+    lp:/sbin/nologin
+
+#：指定的单个字段；
+
+#-#：连续的多个字段；
+
+#,#：离散的多个字段；
+
+[root@centos7 ~]# cut -d : -f1,3-5,7 /tmp/passwd
+
+    root:0:0:root:/bin/bash
+    bin:1:1:bin:/sbin/nologin
+
+### sort：查看文件时按指定参数进行排序
+使用语法：sort  [OPTION]…  [FILE]…OPTION
+
+选项:-n：基于数值大小而非字符进行排序；
+
+    -t CHAR：指定分隔符；
+    -k #：用于排序比较的字段；
+    -r：逆序排序；
+    -f：忽略字符大小写
+    -u：重复的行只保留一份；
+
+重复行：连续且相同；sort默认字母排序，所以显示的相同的内容自然就连续显示
+
+示例：使用：做分隔符，以第3字段排序，按照数值大小排序。
+
+[root@centos7 ~]# sort -t: -k3 -n /tmp/passwd 此命令选项和参数之间可以省略空格
+
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+
+### uniq：报告或移除重复的行
+使用语法：uniq [OPTION]… [INPUT [OUTPUT]]OPTION
+
+选项:-c：显示每行的重复次数；
+-u：仅显示未曾重复过的行；
+
+-d：仅显示重复过的的行；
+
+示例：
+
+[root@centos7 ~]# cut -d: -f7 /tmp/passwd | sort | uniq -c
+
+    4 /bin/bash
+    1 /bin/sh
+    1 /bin/sync
+    1 /bin/tcsh
+    1 /sbin/halt
+    15 /sbin/nologin
+    1 /sbin/shutdown
+
+ ### wc：word count查看文件的统计信息，行数、单词数、字节数
+使用语法wc  [OPTION]…  [FILE]…
+
+OPTION选项:
+
+    -l: lines仅显示行数
+    -w：words仅显示单词数
+    -c: bytes仅显示字节数
+
+示例1：
+
+[root@centos7 ~]# wc /etc/fstab
+
+12  60 541 /etc/fstab
+
+[root@centos7 ~]# wc -w /etc/fstab
+
+60 /etc/fstab
+
+[root@centos7 ~]# wc -c /etc/fstab
+
+541 /etc/fstab
+
+[root@centos7 ~]# wc -l /etc/fstab
+
+12 /etc/fstab
+
+示例2：
+
+[root@centos7 ~]# cat /etc/passwd | wc
+
+24&ensp;&ensp;43&ensp;&ensp;1139
+
+### 练习题：
+1、列出当前系统上所有已经登录的用户的用户名，注意：同一个用户登录多次，则只显示一次即可
+
+    [root@centos7 ~]# who | cut -d ‘ ‘ -f1 | sort -u
+    root
+    test5
+
+2、取出最后登录到当前系统的用户的相关信息
+
+    [root@centos7 ~]# who | tail -1或者last | head -1
+
+    test5 pts/2 2018-08-27 12:07 (192.168.1.104)
+
+ 3、取出当前系统上被用户当作其默认shell的最多的那个shell
+
+     [root@centos7 ~]# cut -d: -f7 /etc/passwd | sort | uniq -c | sort -n | tail -1
+
+    15 /sbin/nologin
+
+4、将/etc/passwd中的第三个字段数值最大的后10个用户的信息全部改为大写后保存至/tmp/maxusers.txt文件中
+
+    [root@centos7 ~]# sort -t: -k3 -n /etc/passwd | tail -10 | tr ‘a-z’ ‘A-Z’ > /tmp/maxusers.txt
+    [root@centos7 ~]# cat /tmp/maxusers.txt
+    TEST:X:3000:3000::/HOME/TEST:/BIN/BASH
+    CORE:X:4002:4002:FEDORA:/HOME/CORE:/BIN/TCSH
+    FEDORA:X:4003:4003:FEDORA CORE:/VAR/TMP/FEDORA:/BIN/SH
+
+5、取出当前主机的IP地址，提示：对ifconfig命令的结果进行切分
+
+    [root@centos7 ~]# ifconfig | grep -o “inet\>.*[1-9]$” | cut -d’ ‘ -f 2
+    192.168.232.130
+
+6、列出/etc目录下所有以.conf结尾的文件的文件名，并将其名字转换为大写后保存至/tmp/etc.conf文件中
+
+    [root@centos7 ~]#ls /etc/*.conf | tr ‘a-z’ ‘A-Z’ > /tmp/etc.conf
+    [root@centos7 ~]# cat /tmp/etc.conf
+    /ETC/ASOUND.CONF
+    /ETC/DNSMASQ.CONF
+    /ETC/DRACUT.CONF
+    /ETC/E2FSCK.CONF
+    剩余部分省略
+
+7、显示/var目录下一级子目录或文件的总个数
+
+    [root@centos7 ~]# ls /var | wc -w
+    21
+
+8、取出/etc/group文件中第三个字段数值最小的10个组的名字
+
+    [root@centos7 ~]# sort -t: -k3 -n /etc/group | head -10 | cut -d: -f1
+    root
+    bin
+    daemon
+    sys
+    adm
+    tty
+    disk
+    lp
+    mem
+    kmem
+
+9、将/etc/fstab和/etc/issue文件的内容合并为同一个内容后保存至/tmp/etc.test文件中
+
+    [root@centos7 ~]# sort -t: -k3 -n /etc/group | head -10 | cut -d: -f1
+
+    [root@centos7 ~]# cat /tmp/etc.text
+
+### /etc/fstab
+###
+### Accessible filesystems, by reference, are maintained under ‘/dev/disk’
+### See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+###
+    /dev/mapper/centos-root / xfs defaults 0 0
+    UUID=71e0cb79-3fa4-4b7b-806d-0beaafd5ca2b /boot xfs defaults 0 0
+    /dev/mapper/centos-home /home xfs defaults 0 0
+    /dev/mapper/centos-swap swap swap defaults 0 0
+    \S
+    Kernel \r on an \m
