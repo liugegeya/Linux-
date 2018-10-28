@@ -1,0 +1,160 @@
+## 1、简述osi七层模型和TCP/IP五层模型;
+
+###  一、简介
+
+&ensp;&ensp;&ensp;&ensp;ISO制定了OSI，从而使通信系统得以标准化。ISO：国际化标准组织，International Organization for Standardization
+
+&ensp;&ensp;&ensp;&ensp;OSI：开放式通信系统互联参考模型，Open System Interconnection
+
+&ensp;&ensp;&ensp;&ensp;在ISO制定OSI之前TCP/IP就已经出现了，虽然不是很规范标准，但是解决了当时所遇到的问题，所以尽管OSI规范标准化了网络模型和协议，人们还是习惯使用TCP/IP模型和协议。
+
+#### （1）OSI七层模型
+
+&ensp;&ensp;&ensp;&ensp;OSI中的层 功能 TCP/IP协议族
+应用层 文件传输，电子邮件，文件服务，虚拟终端 TFTP，HTTP，SNMP，FTP，SMTP，DNS，Telnet
+
+    表示层 数据格式化，代码转换，数据加密 没有协议
+    会话层 解除或建立与别的接点的联系 没有协议
+    传输层 提供端对端的接口 TCP，UDP
+    网络层 为数据包选择路由 IP，ICMP，RIP，OSPF，BGP，IGMP
+    数据链路层 传输有地址的帧以及错误检测功能 SLIP，CSLIP，PPP，ARP，RARP，MTU
+    物理层 以二进制数据形式在物理媒体上传输数据 ISO2110，IEEE802，IEEE802.2
+
+#### （2）TCP/IP五层模型
+
+    应用层
+    传输层
+    网络层
+    数据链路层
+    物理层
+### 二、OSI的基本概念
+
+&ensp;&ensp;&ensp;&ensp;OSI是Open System Interconnect的缩写，意为开放式系统互联。
+
+OSI七层参考模型的各个层次的划分遵循下列原则：
+
+1、同一层中的各网络节点都有相同的层次结构，具有同样的功能。
+
+2、同一节点内相邻层之间通过接口（可以是逻辑接口）进行通信。
+
+3、七层结构中的每一层使用下一层提供的服务，并且向其上层提供服务。
+
+4、不同节点的同等层按照协议实现对等层之间的通信。
+
+##### 第一层：物理层（PhysicalLayer)，
+
+&ensp;&ensp;&ensp;&ensp;规定通信设备的机械的、电气的、功能的和过程的特性，用以建立、维护和拆除物理链路连接。具体地讲，机械 特性规定了网络连接时所需接插件的规格尺寸、引脚数量和排列情况等；电气特性规定了在物理连接上传输bit流时线路上信号电平的大小、阻抗匹配、传输速率 距离限制等；功能特性是指对各个信号先分配确切的信号含义，即定义了DTE和DCE之间各个线路的功能；规程特性定义了利用信号线进行bit流传输的一组 操作规程，是指在物理连接的建立、维护、交换信息是，DTE和DCE双放在各电路上的动作系列。在这一层，数据的单位称为比特（bit）。属于物理层定义的典型规范代表包括：EIA/TIA RS-232、EIA/TIA RS-449、V.35、RJ-45等。
+
+##### 第二层：数据链路层（DataLinkLayer):
+
+&ensp;&ensp;&ensp;&ensp;在物理层提供比特流服务的基础上，建立相邻结点之间的数据链路，通过差错控制提供数据帧（Frame）在信道上无差错的传输，并进行各电路上的动作系列。数据链路层在不可靠的物理介质上提供可靠的传输。该层的作用包括：物理地址寻址、数据的成帧、流量控制、数据的检错、重发等。在这一层，数据的单位称为帧（frame）。数据链路层协议的代表包括：SDLC、HDLC、PPP、STP、帧中继等。
+
+##### 第三层：网络层
+
+&ensp;&ensp;&ensp;&ensp;在计算机网络中进行通信的两个计算机之间可能会经过很多个数据链路，也可能还要经过很多通信子网。网络层的任务就是选择合适的网间路由和交换结点，确保数据及时传送。网络层将数据链路层提供的帧组成数据包，包中封装有网络层包头，其中含有逻辑地址信息- -源站点和目的站点地址的网络地址。如果你在谈论一个IP地址，那么你是在处理第3层的问题，这是“数据包”问题，而不是第2层的“帧”。IP是第3层问题的一部分，此外还有一些路由协议和地 址解析协议（ARP）。有关路由的一切事情都在这第3层处理。地址解析和路由是3层的重要目的。网络层还可以实现拥塞控制、网际互连等功能。在这一层，数据的单位称为数据包（packet）。网络层协议的代表包括：IP、IPX、RIP、OSPF等。
+
+##### 第四层：传输层
+
+&ensp;&ensp;&ensp;&ensp;第4层的数据单元也称作数据包（packets）。但是，当你谈论TCP等具体的协议时又有特殊的叫法，TCP的数据单元称为段 （segments）而UDP协议的数据单元称为“数据报（datagrams）”。这个层负责获取全部信息，因此，它必须跟踪数据单元碎片、乱序到达的 数据包和其它在传输过程中可能发生的危险。第4层为上层提供端到端（最终用户到最终用户）的透明的、可靠的数据传输服务。所为透明的传输是指在通信过程中 传输层对上层屏蔽了通信传输系统的具体细节。传输层协议的代表包括：TCP、UDP、SPX等。
+
+##### 第五层：会话层
+
+&ensp;&ensp;&ensp;&ensp;这一层也可以称为会晤层或对话层，在会话层及以上的高层次中，数据传送的单位不再另外命名，而是统称为报文。会话层不参与具体的传输，它提供包括访问验证和会话管理在内的建立和维护应用之间通信的机制。如服务器验证用户登录便是由会话层完成的。
+
+##### 第六层：表示层
+
+&ensp;&ensp;&ensp;&ensp;这一层主要解决拥护信息的语法表示问题。它将欲交换的数据从适合于某一用户的抽象语法，转换为适合于OSI系统内部使用的传送语法。即提供格式化的表示和转换数据服务。数据的压缩和解压缩， 加密和解密等工作都由表示层负责。
+
+##### 第七层：应用层
+
+&ensp;&ensp;&ensp;&ensp;应用层为操作系统或网络应用程序提供访问网络服务的接口。应用层协议的代表包括：Telnet、FTP、HTTP、SNMP等。
+
+#### 2、简述iproute家族命令;
+
+ifconfig
+
+&ensp;&ensp;&ensp;&ensp;是用来查看、配置、启用或禁用网络接口的工具。可以用这个工具来临时配置网卡的IP地址、掩码、广播地址、网关等。语法ifconfig [interface]参数up 启动指定网络设备/网卡
+
+    down 关闭指定网络设备/网卡
+    -a 显示全部接口信息
+    -s 显示摘要信息
+    add 设置指定网卡配置IPv6地址
+    del 删除指定网卡配置IPv6地址
+    mtu<字节数> 设置网卡的最大传输单元（bytes）
+    netmask<子网掩码>设置网卡的子网掩码
+    multicast 为网卡设置组播标志实例为网卡配置和删除IPV6地址ifconfig eth0 add 33ffe:3240:800:1005::2/64   
+    #为网卡eth0配置IPv6地址ifconfig eth0 del 33ffe:3240:800:1005::2/64    
+    #为网卡eth0删除IPv6地址用ifconfig修改MAC地址ifconfig eth0 hw ether 00:AA:BB:CC:dd:EE配置IP地址
+    [root@centos6 ~]#ifconfig eth0 192.168.232.136
+    [root@centos6 ~]#ifconfig eth0 192.168.232.136 netmask 255.255.255.0
+    [root@centos6 ~]#ifconfig eth0  192.168.232.136 netmask 255.255.255.0  
+    broadcast 192.168.232.255启用和关闭arp协议：ifconfig eth0 arp  
+    //开启网卡eth0的arp协议ifconfig eth0 -arp 
+    //关闭网卡eth0的arp协议设置最大传输单元ifconfig eth0 mtu 1500 route
+    route程序对内核的IP选路进行操作。它主要用于通过已用ifconfig程序配置好接口来指定主机或网络设置静态路由。
+    语法route [-CFvnNee] [-A family |-4|-6]选项
+      -A:设置地址类型
+      -C:打印将Linux核心路由缓存
+      -v:详细信息模式
+      -n:不执行DNS方向查找，直接显示数字形式的IP地址
+      -e:netstat格式路由表
+      -net:到一个网络的路由表
+      -host:到一个主机的路由表参数Add:增加指定的路由记录
+    Del:删除指定的路由记录
+    Target:目的网络或目的主机；
+    gw:设置默认网关
+    mss:设置TCP最大区块长度，单位MB
+    window:指定通过路由表的TCP链接的TCP窗口大小
+    dev:路由记录所表示的网络接口实例显示当前路由[root@qingcheng-app ~]# route -nKernel IP routing tableDestination     Gateway         Genmask         Flags Metric Ref    Use Iface0.0.0.0         121.14.47.1     0.0.0.0         UG    0      0        0 br1121.14.47.0     0.0.0.0         255.255.255.128 U     0      0        0 br1169.254.0.0     0.0.0.0         255.255.0.0     U     1006   0        0 br0169.254.0.0     0.0.0.0         255.255.0.0     U     1007   0        0 br1172.19.47.0     0.0.0.0         255.255.255.0   U     0      0        0 br0192.168.122.0   0.0.0.0         255.255.255.0   U     0      0        0 
+    
+    virbr0添加网关/设置网关route add -net 224.0.0.0 netmask 240.0.0.0 dev eth0      
+    //增加一条到达244.0.0.0的路由屏蔽一条路由route add -net 224.0.0.0 netmask 240.0.0.0 reject
+
+    删除路由记录route del -net 224.0.0.0 netmask 240.0.0.0route del -net 224.0.0.0 netmask 240.0.0.0 reject
+
+    删除和添加设置默认网关route del default gw 192.168.120.240route add default gw 192.168.120.240
+
+#### netstat
+&ensp;&ensp;&ensp;&ensp;显示网络连接、路由表、接口状态、伪装连接、网络链路信息和组播成员。
+语法netstat [–tcp|-t] [–udp|-u] [–raw|-w] [–listening|-l] [–all|-a] [–numeric|-n][–numeric-hosts] [–numeric-ports] [–numeric-users] [–symbolic|-N] [–extend|-e[–extend|-e]] [–program|-p]
+
+选项 
+
+    -t:tcp 协议相关
+    -u:udp协议相关
+    -r:raw socket相关  
+    -l:处于监听状态   
+    -a:所有状态   
+    -n:已数字方式显示IP和端口   
+    -e:扩展格式   
+    -p:显示相关的进程和PID常用组合：    
+    -tan,uan,-tnl,unl实例列出所有端口netstat -a      
+    //列出所有端口netstat -at     
+    //列出所有tcp端口netstat -au     
+    //列出所有udp的端口列出所有处于监听状态的socketsnetstat -l 
+    //只显示监听端口netstat -lt     
+    //只列出所有监听tcp端口netstat -lu    
+    //只列出所有监听udp端口netstat -lx    
+    //只列出所有监听unix端口显示每个协议的统计信息netstat -s   
+    //显示所有端口的统计信息netstat  -st  
+    //显示TCP端口的统计信息netstat -su   
+    //显示UDP端口的统计信息在netstat 输出中不显示主机，端口和用户名(host,port or user)netstat -an    
+    //不显示主机，端口，用户名如果只是不想让着三个名称的一个被显示，使用以下命令netstat -a –numeric-portsnetstat -a
+
+     –numeric-hostsnetstat -a –numeric-users持续输出netstat信息netstat -c显示核心路由信息netstat -r显示网络接口列表netstat -i ip
+
+&ensp;&ensp;&ensp;&ensp;显示或操纵Linux主机路由、网络设备、策略路由和隧道，是Linux下较新的功能强大的网络配置工具。
+
+语法ip [ OPTIONS ] OBJECT { COMMAND | help }
+
+选项 
+
+    -V:显示指令版本信息
+    -s:输出更详细的信息
+    -f:强制使用指定的协议簇
+    -4:指定使用网络协议是IPv4协议；
+    -6:指定使用网络协议是IPv6协议；
+    -0:输出信息每条记录输出一行，即使内容多也不换行显示；
+    -r:显示主机时，不使用IP地址，而使用主机的域名。参数网络对象：指定要管理的网络对象
+
+具体操作:对指定的网络对象完成具体操作
