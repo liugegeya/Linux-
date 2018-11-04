@@ -1,0 +1,661 @@
+# &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;SHELL脚本编程进阶
+
+echo ‘PATH=/data/script:$PATH’ > /etc/profile.d/script.sh  
+写在PATH变量里，防止每次执行脚本需要写路径
+
+停止脚本中的音乐 bash stop.sh
+
+play 播放音乐文件  例如 play teasong1.wav
+
+time bash +脚本  查看脚本运行需要的时间
+
+密码为8个随机字符  cat /dev/urandom | tr -dc ‘[:alnum:]’ | head -c8
+
+lastb 监控失败登录的信息
+iptables -A INPUT -s IP -j REJECT   拒绝IP访问
+
+action “命令” +true或false   下面就会显示效果（运行之前需要 . /etc/init.d/functions）
+
+if 语句
+
+单分支
+
+    if 判断条件；then
+            条件为真的分支代码
+    fi 
+双分支
+
+    if 判断条件 ；then 
+            条件为真的分支代码
+    else
+            条件为假的分支代码
+    fi
+多分支
+
+    if 判断条件1；then
+          条件1为真的分支代码
+    elif 判断条件2；then
+          条件2为真的分支代码
+    elif 判断条件3；then
+          条件3为真的分支代码
+    else
+          以上条件都为假的分支代码
+    fi
+逐条件进行判断，第一次遇到真条件时，执行其分支，然后结束整个if 语句
+
+练习:   
+ 判断成绩：判断输入的是否为数字  0-60 为一个级别；60-80为一个级别；80-100为一个级别
+
+        read -p “please input your score: “ score
+        if  [[  “$score” =~ ^[0-9]+$  ]] ; then
+               if [ “$score” -lt 0 -o “$score” -gt 100 ] ; then
+                      echo “your score is false”
+                      exit
+               elif [ $score -lt 60 ] ; then
+                      echo “no pass”
+               elif [ $score -lt 80 ] ; then
+                      echo “good”
+               else 
+                      echo “very good”
+               fi
+        else
+               echo “please input digit”
+               exit
+        fi 
+
+条件判断
+
+case语句
+
+   case变量引用in
+                           
+    PAT1)                                             
+           分支1                                     
+           ；；                                      
+    PAT2)                                              
+           分支2
+           ；；
+    ……
+    *)
+          默认分支
+          ；；
+    esac
+ 
+练习    
+制作菜单，根据数字得出具体价格 
+
+      cat <<EOF
+      1:lamian
+      2:huimian
+      3:gaifan
+      4:jiaozi
+      5:baozi 
+      EOF
+      read -p “please choose menu num: “ menu
+      case $menu in
+      1|2)
+             echo “The price is 15元”
+             ；；
+      3|5)  
+             echo “The price is 20元”
+             ；；
+      4)
+             echo “The price is 25元”
+             ；；
+      *) 
+             echo “Input false”
+      esac
+
+输入不同的yes或者no，都能显示yes或者no
+
+1方法
+
+    read -p “Do you agree(yes or no)? “ ans
+      ans=`echo $ans | tr ‘A-Z’ ‘a-z’`
+      case $ans in
+      y|yes)
+              echo “yes”
+              ；；
+      n|no)
+              echo”no”
+              ；；
+      *）
+              echo”input false”
+      esac
+2方法 
+
+    read -p “Do you agree(yes or no)?” ans
+       case $ans in
+       [Yy]|[Yy][Ee][Ss])
+                 echo “yes”
+                 ；；
+       [Nn]|[Nn][Oo])
+                 echo “no”
+                 ；；
+       *）
+                 echo “input false”
+       esac
+
+循环执行
+
+for循环
+
+    for 变量名 in 列表；do
+        循环体
+    done 
+执行机制：依次将列表中的元素赋值给变量名，每次赋值后即执行一次循环体，直到列表中的元素耗尽，循环结束
+
+练习    
+用for计算1到100
+
+方法1
+
+    （C语言写法） for ((sum=0,i=1;i<=100;i++)); do let sum+=i ; done; echo sum=$sum
+ 方法2
+
+     sum=0
+       for i in {1..100}；do
+                let  sum=sum+i
+       done
+       echo sum=$sum
+
+猴子吃桃问题：猴子第一天摘下若干个桃子，当即吃了一半，还不瘾，又多吃了一个第二天早上又将剩下的桃子吃掉一半，又多吃了一个。以后每天早上都吃了前一天剩下的一半零一个。到第10天早上想再吃时，见只剩下一个桃子了。求第一天共摘了多少。 
+
+    sum=1
+       for i in {1..9}；do
+            let sum=(sum+1)*2
+       done
+       echo “桃子个数是$sum”
+ 
+把文件名取出来并增加新的后缀  (rename 可以直接修改文件后缀  格式：rename “jpg” “log”)
+
+    for i in /data/script/text/*；do
+          num=`echo $i | sed -nr ‘s@(.*)\..*@\1@p’`
+          mv $i $num.log
+    done
+
+ping网段信息，查看哪些可以ping通，哪些不通   （里面的{ } 为并行执行）
+
+      netid=172.18.133
+      for id in {1..254}；do
+               {
+               if ping -c1 -w1 $netid.$id &>/dev/nvll；then
+                       echo $netid.$id is up
+               else
+                       echo $netid.$id is down
+               fi
+               }&
+      done
+      wait (wait意思是执行完命令之后自动退出)
+
+ping网段信息，查看哪些可以ping通，哪些不通，同时把可以ping通的写入文件中
+
+    > tmp/iplist.log
+    read -p “please input a netid:(eg:192.168.34.0)” netid
+    netid=`echo $netid | sed -nr ‘s@(.*)\..*@\1@p’`
+    echo netid=$netid
+    for id in {1..254}；do
+              {
+               if ping -c1 -w1 $netid.$id &>/dev/nvll；then
+                       echo “$netid.$id” >>/tmp/iplist.log
+                       echo $netid.$id is up
+               else
+                       echo $netid.$id is down
+               fi
+               }&
+      done
+      wait
+显示几行几列的*,并且*可以闪烁     (line 行    colume 列)
+
+    read -p “please input colume: “ colume
+    read -p “please input line: “ line
+    for i in  `seq  $line` ; do
+           for j in `seq $colume`; do
+                   COLOR=$[RANDOM%7+31]
+                   echo -e “\033[1;5;${COLOR}m*\033[0m\c”
+           done
+           echo
+    done
+
+ 显示几行几列的*,并且*只有周围闪烁
+
+方法1
+
+    read -p “please input colume: “ colume
+    read -p “please input line: “ line
+    for i  in  `seq  $line` ; do
+           for j in `seq $colume`; do
+                   if [ $i -eq 1 -o $i -eq $line -o $j -eq 1 -o $j -eq $colume ]；then
+                        COLOR=$[RANDOM%7+31]
+                        echo -e “\033[1;5;${COLOR}m*\033[0m\c”
+                   else
+                        echo -e “*\c”
+                   fi
+           done
+           echo
+    done
+
+方法2 
+
+      read -p “please input colume: “ colume
+      read -p “please input line: “ line
+      for i  in  `seq  $line` ; do
+               for j in `seq $colume`; do
+                     case $i in
+                     1|$line)
+                           COLOR=$[RANDOM%7+31]
+                           echo -e "\033[1;5;${COLOR}m*\033[0m\c"
+                           ;;
+                     *)
+                           case $j in
+                           1|$col)
+                                  COLOR=$[RANDOM%7+31]
+                                  echo -e "\033[1;5;${COLOR}m*\033[0m\c"
+                                  ;;
+                           *)
+                                  echo -e "*\c"   
+                           esac
+                     esac
+               done
+               echo
+      done
+
+   打印等腰三角形
+
+    read -p “please input line: “ line
+    for i in `seq $line`；do
+             let stat=$i*2-1
+             let space=$line-$i
+             for j in `seq $space`；do
+                      echo -n “ “
+             done
+             for k in `seq $star`；do
+                      echo -n “*”
+             done
+             echo 
+     done
+
+   99乘法表
+
+方法1
+
+    for i in {1..9}；do
+           for j in `seq $i`；do
+                  let sum=i*j
+                  echo -e “${j}X${i}=$sum\t\c”
+           done
+           echo
+    done
+方法2
+
+    for((i=1;i<=9;i++))；do
+          for((j=1;j<=$i;j++))；do
+                  echo -en “${i}X${j}=$[$i*$j]\t\c”
+          done
+          echo
+     done
+
+   国际象棋棋盘
+
+方法1  
+每次打印两个
+
+    for i in {1..8}；do
+          for j in {1..4}；do
+                  if [ $[i%2] -eq 0 ]；then
+                        echo -e “\033[47m  \033[0m  \c”
+                  else
+                        echo -e “  \033[47m  \033[0m\c”
+                  fi
+           done
+           echo
+方法2
+
+每次打印两行
+
+    for i in {1..4}；do
+            for j in {1..4}；do
+                   echo -e “\033[47m  \033[0m  \c”
+            done
+            echo
+            for k in {1..4}；do
+                   echo -e “  \033[47m  \033[0m\c”
+            done
+            echo
+    done
+方法3 
+
+       for i in {1..8}；do
+                for j in {1..8}；do
+                       color=$[(j+i)%2]
+                       if [ $color -eq 0 ]；then
+                              echo -e “\033[47m  \033[0m\c”
+                       else
+                              echo -e “  \c”
+                       fi
+                 done
+                 echo
+         done
+
+while循环
+
+     while CONDITION；do
+          循环体
+     done
+ CONDTION  
+循环控制条件，进入循环之前，先做一次判断；每一次循环之后会再次做判断；条件为true,则执行一次循环；直到条件测试状态为false，终止循环
+
+df | while read diskspace ;do echo $diskspace; done  在脚本中显示df
+
+
+练习   
+创建cracker用户，并且抓取以该用户访问本机IP的IP地址，强制踢出并放入文件，防止下次登录
+
+     while : ; do
+            iplist=`who | sed -nr ‘/^cracker/s/.*\((.*)\)/\1/p’`
+            if [ “$ipist” ] ; then
+                        pkill -9 -U cracker
+                        echo “cracker is killed”
+                        echo sshd:$iplist >>/etc/hosts.deny
+            fi
+            sleep 10
+     done
+
+until 循环（和while条件相反）
+
+    until CONDITION; do
+             循环体
+    done
+
+循环控制语句continue
+
+    continue [N]: 提前结束第N层的本轮循环，而直接进入下一轮循环，最内层为第一层
+     while CONDITION1;do
+          CMD1
+          …
+          if CONDITION2;do
+                continue
+          fi
+          CMDn
+          …
+     done
+循环控制语句 break
+
+    break [N]: 提前结束第N层循环，最内层为第1层
+    while CONDITION1;do
+         CMD1
+         …
+         if CONDITION2;then
+               break
+         fi
+    done
+
+循环控制shift命令
+
+用于将参量列表list左移指定次数，缺省为左移一次
+
+创建无限循环
+
+    while true;do
+     循环体
+    done
+
+    until false;do
+      循环体
+    done
+
+练习  
+打印1-10，当i=5时，结束本层的循环（不会显示5）
+
+      for((i=1;i<=10;i++));do
+               if [ “$i -eq 5 ] ;then
+                         continue
+               fi
+               echo i=$i
+      done
+
+     打印1-10，当i=5时，结束全部的循环(i只会显示1-4)
+      for((i=1;i<=10;i++));do
+               if [ “$i -eq 5 ] ;then
+                         break
+               fi
+               echo i=$i
+      done
+
+监控httpd服务，如果出现异常，重新启动服务，并且退出脚本，正常运行不做处理
+
+    SLEEPTIME=30
+    until false ;do
+              if ! killall -0 httpd &>/dev/null ;then
+                      service httpd restart &> /dev/null;
+                      echo “At `date +’%F %T’` httpd restarted” >> /data/httpd.log
+                      break
+              fi
+              sleep $SLEEPTIME
+    done
+
+监控失败登录的IP地址，判断文件中是否有此IP，当文件中有此IP时不做追加，没有此IP追加到文件本公司IP不做检查
+
+     localnet=”192.168.34”
+     sleeptime=10
+     while : ；do
+              iplist=`lastb | grep -Eo “(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])” | grep -v “$localnet” | sort -u
+              for ip in $iplist ;do
+                      echo  $ip
+                      grep “$ip” /data/crack_iplist.log &> /dev/null || echo “$ip” >> /data/crack_iplist.log
+              done
+              sleep $sleeptime
+     done
+
+创建多个账号
+
+方法1
+
+     while : ; do
+              [ -z “$1” ] && break
+              useradd $1 && echo $1 is created
+              shift
+     done
+方法2
+
+       while [ “$1” ] ; do
+              useradd $1 && echo $1 is created
+              shift
+     done
+
+随机生成10以内的数字，可以判断输入的是否为数字，实现猜字游戏，提示比较大或小，相等则退出
+
+     . /data/script/functions  （调用判断是否为数字的函数）
+     n=$[RANDOM%11]
+     while read -p “input a 0-10 number :” num ; do
+                is_digit $num || { echo input no digit; continue; }
+                if [ $num -gt $n ] ;then
+                        echo $num is greater
+                elif [ $num -lt $n ] “then
+                        echo $num is lower
+                else
+                        echo “gusee right!”
+                        break
+                fi
+      done
+
+在文件/etc/passwd中，当用户的UID大于等于1000时，取出用户名和UID，低于1000不做处理
+
+      while read line; do
+                 uid=`echo $line | cut -d: -f3`
+                 username=`echo $line | cut -d: -f1`
+                 if [ $uid -ge 1000 ] ; then
+                             echo $username:$uid
+                 fi
+      done < /etc/passwd
+
+判断分区利用率，当分区利用率大于80时显示分区名和利用率，小于80不做显示
+
+    warning =80
+    df | while read diskspace ;do
+    space=`echo $diskspace | sed -nr ‘/^\/dev\/sd/s@.* (.+)%.*@\1@p’` 
+                  disk=`echo $diskspace | sed -nr ‘/^\/dev\/sd/s@([^ ]+).*@\1@p’`
+                  if [[ $space =~ ^[0-9+$] ]] ; then  (这一行是判断取出的是不是数字，可以不加这一行)
+                               if [ $space -gt $warning ] ; then
+                                        echo $disk:$space
+                               fi
+                  fi
+       done
+
+判断ddos攻击，当IP地址连接三次以上时，写入文件中
+
+    netstat -nta | sed -nr ‘/^tcp /s/.*  ([1-9].*):.*/\1/p’ | sort | uniq -c | while read iplist ; do
+             linknum=`echo $iplist | cut -d” “ -f1`
+             ip=`echo $iplist | cut -d” “ -f2`
+                 if [ $linknum -ge 3 ] ; then 
+                           echo $ip >> /data/cracker_ip.log
+                 fi
+    done
+
+ select 循环和菜单
+
+     select variable in list
+         do
+            循环体命令
+         done
+用户输入被保存在内置变量 REPLY 中
+
+select 是个无限循环，因此要记住用 break 命令退出循环，或用 exit 命令终止脚本。也可以按 ctrl+c 退出循环
+
+PS3可以更改提示符
+
+练习   
+制作菜单，根据数字得出具体价格,当选择6时才会退出
+
+    PS3=”please input a number:”
+    select menu in lamian huimian gaifan jiaozi baozi quit ; do
+            case $REPLY in
+                1|2)
+                         echo “The price is 15元”
+                         ；；
+      			3|5)  
+             			 echo “The price is 20元”
+                         ；；
+                4)
+                         echo “The price is 25元”
+                         ；；
+                6)
+                         echo “quit”
+                         break
+                         ；；
+                *) 
+                         echo “Input false”
+                esac
+     done
+
+函数 function 
+
+    语法   f_name（）{
+                 函数体
+         }
+定位函数文件并载入shell的格式
+
+.  filename 或 source filename
+
+删除函数 unset function_name 
+
+在函数中定义局部变量的方法
+
+local NAME=VALUE (local可以使name定义范围在函数体内部)
+
+return 从函数中返回，用最后状态命令决定返回值 （和exit不同 return提前结束函数，不会结束脚本）
+
+环境函数
+
+使子进程也可使用
+
+声明：export -f function_name
+
+查看：export -f 或 declare -xf
+
+利用函数判断当前版本为6或者7
+
+    version(){
+              sed -nr ‘s/.* ([0-9]+\..*/\1/p’ /etc/centos-release
+       }
+       echo OS version is `version`
+递归  n!=1x2x3x…xn
+
+       阶乘递归方式定义 0！=1，n!=(n-1)!xn
+       n!=n(n-1)(n-2)…1
+       n(n-1)!=n(n-1)(n-2)!
+函数递归示例
+
+    fact(){
+         if [ “$1” -eq 1 ] ; then
+                    echo 1
+             else
+                    echo $[$1*`fact $[$1-1]`]
+             fi
+    }
+    fact  $1
+
+斐波那契数列又称黄金分割数列，因数学家列昂纳多·斐波那契以兔子繁殖为例子而引入，故又称为“兔子数列”，指的是这样一个数列：0、1、1、2、3、5、8、13、21、34、……，斐波纳契数列以如下被以递归的方法定义：F（0）=0，F（1）=1，F（n）=F(n-1)+F(n-2)（n≥2）
+利用函数，求n阶斐波那契数列
+ 
+    fei(){
+      if [ “$1” -eq 0 ]; then
+              echo 0
+      elif [ “$1” -eq 1 ]; then
+              echo 1
+      else
+              echo $[`fei $[$1-1]`+`fei $[$1-2]`]
+      fi
+    }
+    fei  $1
+
+信号捕捉 trap
+
+  trap '触发指令' 信号
+
+进程收到系统发出的指定信号后，将执行自定义指令，而不会执行原操作
+
+trap '' 信号
+忽略信号的操作
+
+trap '-' 信号
+恢复原信号的操作
+
+trap -p
+列出自定义信号操作
+
+trap finish EXIT
+当脚本退出时，执行finish函数
+
+ 打印1-10，当按ctrl时，显示no exit；打印11-20，按ctrl时，忽略信号的操作；打印21-30，按ctrl时，恢复原信号的操作
+
+     trap ‘echo no exit’ 2 15
+     trap -p
+     for ((i=1;i<=10;i++));do
+               echo $i
+               sleep 1
+     done
+     trap ‘ ’ 2 15
+     trap -p
+     for ((i=11;i<=20;i++));do
+               echo $i
+               sleep 1
+     done
+     trap ‘-’ 2 15
+     trap -p
+     for ((i=21;i<=30;i++));do
+               echo $i
+               sleep 1
+     done
+
+打印 1-10，当正常运行时，可以运行完；当中断运行时，sum无法执行，但echo “finish” 执行之后才退出
+
+    finish(){
+            echo “finish”
+    }
+    trap finish  exit
+    for ((i=1;i<=10;i++));do
+         let sum+=i
+         sleep 1
+    done
+    echo $sum
